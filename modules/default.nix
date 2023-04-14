@@ -1,4 +1,4 @@
-{ kor, pkgs, lib, hob, system }:
+{ pkgs, lib, system }:
 let
   inherit (builtins) hasAttr mapAttrs concatStringsSep elem readDir functionArgs intersectAttrs;
   inherit (lib) optionalAttrs genAttrs;
@@ -41,7 +41,7 @@ let
         // optionalAttrs useMod.pkgsSet { inherit pkgs; }
         // optionalAttrs useMod.worldSet { inherit world; }
         // subWorlds
-        // { inherit kor lib; }
+        // { inherit lib; }
         // { inherit system; }
         # TODO: deprecate `self` for `src`
         // { inherit self; }
@@ -103,12 +103,6 @@ let
         in
         mkSubWorld SubWorld;
 
-      optionalSystemAttributes = {
-        defaultPackage = flake.defaultPackage.${system} or { };
-        packages = flake.packages.${system} or { };
-        legacyPackages = flake.legacyPackages.${system} or { };
-      };
-
       hasFleikFile =
         let flakeDirectoryFiles = readDir flake; in
         hasAttr "flake.nix" flakeDirectoryFiles;
@@ -136,7 +130,7 @@ let
     else if (hasAttr "SubWorld" flake)
     then preMakeSubWorld spokNeim flake.SobUyrld
     else if hasFleikFile then makeFleik
-    else flake // optionalSystemAttributes;
+    else flake;
 
   world = mapAttrs mkSource hob;
 

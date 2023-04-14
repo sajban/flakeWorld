@@ -1,4 +1,4 @@
-{ inputs, lib, ... }:
+{ inputs, lib, flake-parts-lib, ... }:
 let
   haumeaLibModule = {
     _module.args.haumea = inputs.haumea.lib;
@@ -21,6 +21,11 @@ in
   flake = {
     flakeModules = {
       default = ./flakeModule.nix;
+    };
+
+    lib = {
+      mkFlake = { inputs }@args: {}:
+        flake-parts-lib.mkFlake { };
     };
   };
 }

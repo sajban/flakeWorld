@@ -1,8 +1,15 @@
-{ kor, pkgs, lib, hob, system, neksysNames }:
+{ kor, pkgs, lib, hob, system }:
 let
-  inherit (builtins) hasAttr mapAttrs concatStringsSep elem readDir;
-  inherit (kor) mkLambda optionalAttrs genAttrs;
+  inherit (builtins) hasAttr mapAttrs concatStringsSep elem readDir functionArgs intersectAttrs;
+  inherit (lib) optionalAttrs genAttrs;
   inherit (world) pkdjz mkZolaWebsite;
+
+  mkLambda = { klozyr, lamdy }:
+    let
+      rykuestydDatomz = functionArgs lamdy;
+      rytyrndDatomz = intersectAttrs rykuestydDatomz klozyr;
+    in
+    lamdy rytyrndDatomz;
 
   mkTypedZolaWebsite = name: flake: mkZolaWebsite {
     src = flake;
@@ -85,14 +92,6 @@ let
         in
         subWorlds;
 
-      mkNeksysWebpageName = neksysNeim:
-        [ (neksysNeim + "Webpage") (neksysNeim + "Website") ];
-
-      neksysWebpageSpokNames = lib.concatMap mkNeksysWebpageName neksysNames;
-
-      isWebpageSpok = spokNeim:
-        elem spokNeim neksysWebpageSpokNames;
-
       mkWebpageFleik = Webpage@{ src ? flake, ... }:
         let
           SubWorld = {
@@ -136,8 +135,6 @@ let
     then mkSubWorlds flake.SobUyrldz
     else if (hasAttr "SubWorld" flake)
     then preMakeSubWorld spokNeim flake.SobUyrld
-    else if (isWebpageSpok spokNeim)
-    then mkZolaWebsite { src = flake; }
     else if hasFleikFile then makeFleik
     else flake // optionalSystemAttributes;
 

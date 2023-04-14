@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs = { type = "indirect"; id = "nixpkgs"; };
 
+    haumea = {
+      url = "github:nix-community/haumea";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     flake-parts = {
       type = "indirect";
       id = "flake-parts";

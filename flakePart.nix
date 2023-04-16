@@ -1,7 +1,7 @@
-{ inputs, lib, flake-parts-lib, ... }:
+{ self, inputs, lib, flake-parts-lib, ... }:
 let
   haumeaLibModule = {
-    _module.args.haumea = inputs.haumea.lib;
+    _module.args.haumea-lib = inputs.haumea.lib;
   };
 
   haumeaModule = ./modules/haumea.nix;
@@ -14,6 +14,7 @@ in
     haumeaLibModule
     haumeaModule
     inputs.nixpkgs.flakeModules.default
+    ./flakeModule.nix
   ];
 
   perSystem = ./perSystem.nix;
@@ -24,8 +25,7 @@ in
     };
 
     lib = {
-      mkFlake = { inputs }@args: {}:
-        flake-parts-lib.mkFlake { };
+      inherit (self.flake) mkSubWorld;
     };
   };
 }

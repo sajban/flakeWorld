@@ -1,61 +1,48 @@
 { config, self, lib, flake-parts-lib, haumea-lib, ... }:
-
 let
-  inherit (lib)
-    dontRecurseIntoAttrs
-    mkOption
-    types;
-
   inherit (flake-parts-lib)
     mkPerSystemOption mkFlake;
 
   inherit (haumea-lib)
     load loaders;
 
-  uyrld = mkUyrld { inherit pkgs kor lib system hob neksysNames; };
+  finalMkSubworld = { inputs, module, root, ... }:
+    mkFlake { inherit inputs; } {
+      systems = lib.systems.flakeExposed;
 
-  defaultInputs = { };
+      imports = [ ];
 
-  defaultModule = { self, inputs, lib, flake-parts-lib, ... }: {
-    systems = lib.systems.flakeExposed;
-
-    imports = [ ];
-
-    perSystem = { pkgs, ... }: { };
-  };
-
-  functionTypeByName = {
-    default = { inputs, module, root, ... }:
-      mkFlake { inherit inputs; } {
-        systems = lib.systems.flakeExposed;
-
-        imports = [ ];
-
-        perSystem = { pkgs, ... }: {
-          config = {
-            packages = load {
-              inherit inputs;
-              src = root;
-              loader = loader.callPackage;
-            };
-          };
+      perSystem = { pkgs, ... }: {
+        packages = load {
+          inputs = pkgs;
+          src = root;
+          loader = loaders.callPackage;
         };
       };
+    };
+
+  mkSubWorldByType = {
+    default = finalMkSubworld { };
   };
 
   mkSubWorld =
-    { type ? "default"
-    , inputs ? defaultInputs
-    , module ? defaultModule
+    { type ? null
+    , inputs ? { }
+    , module ? null
     , root ? null
     }@args:
-    functionTypeByName."${type}" args;
+    let
+      throwNoSubWorldFileError = "Missing subWorld.nix file";
+      throwNoRootError = "Missing `root` argument";
+      mkTypeFromSubWorldFile = if root != null then { } else throwNoSubWorldFileError;
+      mkTypeFromRoot = if root != null then mkTypeFromSubWorldFile else throwNoRootError;
+      type = if args.type != null then args.type else mkTypeFromRoot;
+    in
+    mkSubWorldByType."${type}" args;
 
 in
 {
-  options = { };
-
-  flake = {
-    inherit (config) mkSubworld;
+  flake.lib = {
+    inherit mkSubWorld;
   };
 }

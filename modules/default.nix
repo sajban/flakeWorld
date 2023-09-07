@@ -1,7 +1,8 @@
-{ pkgs, lib, system }:
+{ lib, system, hob }:
 let
   inherit (builtins) hasAttr mapAttrs concatStringsSep elem readDir functionArgs intersectAttrs;
   inherit (lib) optionalAttrs genAttrs;
+
   inherit (world) pkdjz mkZolaWebsite;
 
   mkLambda = { klozyr, lamdy }:

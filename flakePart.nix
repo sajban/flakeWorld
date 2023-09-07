@@ -1,7 +1,10 @@
 { self, inputs, lib, flake-parts-lib, ... }:
 let
-  haumeaLibModule = {
-    _module.args.haumea-lib = inputs.haumea.lib;
+  libsModule = {
+    _module.args = {
+      haumea-lib = inputs.haumea.lib;
+      flakeWorldLib = self.flake.lib;
+    };
   };
 
   haumeaModule = ./modules/haumea.nix;
@@ -11,7 +14,7 @@ in
   systems = lib.systems.flakeExposed;
 
   imports = [
-    haumeaLibModule
+    libsModule
     haumeaModule
     inputs.nixpkgs.flakeModules.default
     ./flakeModule.nix
@@ -20,6 +23,8 @@ in
   perSystem = ./perSystem.nix;
 
   flake = {
+    main = { };
+
     flakeModules = {
       default = ./flakeModule.nix;
     };

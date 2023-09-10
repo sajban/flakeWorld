@@ -12,8 +12,9 @@
     yants = { type = "indirect"; id = "yants"; };
 
     haumea = {
-      url = "github:nix-community/haumea";
-      inputs.nixpkgs.follows = "nixpkgs";
+      type = "indirect";
+      id = "haumea";
+      inputs.nixpkgs.follows = "lib";
     };
 
     flake-parts = {

@@ -2,14 +2,14 @@
   description = "flakeWorld: Objectifying nix flakes - Nix library for KriomOS";
 
   inputs = {
-    blank = { type = "indirect"; id = "blank"; };
-    incl = { type = "indirect"; id = "incl"; };
     lib = { type = "indirect"; id = "lib"; };
     nixpkgs = { type = "indirect"; id = "nixpkgs"; };
     paisano = { type = "indirect"; id = "paisano"; };
     paisano-tui = { type = "indirect"; id = "paisano-tui"; };
     dmerge = { type = "indirect"; id = "dmerge"; };
     yants = { type = "indirect"; id = "yants"; };
+    blank = { type = "indirect"; id = "blank"; };
+    incl = { type = "indirect"; id = "incl"; };
 
     haumea = {
       type = "indirect";
@@ -35,7 +35,16 @@
     };
   };
 
-  outputs = inputs@{ self, flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; }
-      (import ./flakePart.nix);
+  outputs = inputs@{ self, std, ... }:
+    std.growOn
+      {
+        inherit inputs;
+        cellsFrom = ./cells;
+        cellBlocks = with std.blockTypes; [
+          (devshells "devshell")
+        ];
+      }
+      { devShells = std.harvest self [ "devshell" "devshell" ]; };
 }
+
+  

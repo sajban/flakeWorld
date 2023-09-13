@@ -43,7 +43,6 @@
       inputs = {
         nixlib.follows = "lib";
         haumea.follows = "haumea";
-        nixpkgs.follows = "nixpkgs";
         yants.follows = "yants";
       };
     };
@@ -88,10 +87,21 @@
       inputs = {
         blank.follows = "blank";
         devshell.follows = "devshell";
-        haumea.follows = "haumea";
+        haumea = {
+          inputs = { nixpkgs.follows = "lib"; };
+          follows = "haumea";
+        };
         nixago.follows = "nixago";
         nixpkgs.follows = "nixpkgs";
         yants.follows = "yants";
+        incl.inputs.nixlib.follows = "lib";
+        dmerge = {
+          inputs = {
+            nixlib.follows = "lib";
+            haumea.follows = "haumea";
+            yants.follows = "yants";
+          };
+        };
       };
     };
   };
@@ -104,9 +114,13 @@
         cellBlocks = with std.blockTypes; [
           (devshells "shell")
           (nixago "configs")
+          (functions "make")
         ];
       }
-      { devShells = std.harvest self [ "_local" "shell" ]; };
+      {
+        devShells = std.harvest self [ "_local" "shell" ];
+        make = std.harvest self [ "public" "make" ];
+      };
 }
 
   

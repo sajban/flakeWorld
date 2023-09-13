@@ -25,7 +25,11 @@ l.mapAttrs (_: stdlib.dev.mkShell) rec {
           category = "cli-dev";
           name = "dlv";
         }
-      ] ;
+        {
+          package = std.packages.default;
+          category = "legal";
+        }
+      ];
   };
 
 }

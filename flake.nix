@@ -117,9 +117,14 @@
           (functions "make")
         ];
       }
+
       {
         devShells = std.harvest self [ "_local" "shell" ];
-        make = std.harvest self [ "public" "make" ];
+        perSystemMake = std.harvest self [ "public" "make" ];
+      }
+      
+      {
+        make = nosys inputs outputs;
       };
 }
 
